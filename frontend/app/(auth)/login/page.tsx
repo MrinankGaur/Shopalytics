@@ -87,11 +87,6 @@ export default function LoginPage() {
               placeholder="More than 6 characters"
             />
           </div>
-          <div className="text-right text-sm">
-            <Link href="/forgot-password" className="text-indigo-600 hover:underline font-semibold">
-              Forgot Password?
-            </Link>
-          </div>
           <button 
             type="submit" 
             disabled={loading} 
