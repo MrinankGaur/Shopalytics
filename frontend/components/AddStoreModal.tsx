@@ -21,7 +21,7 @@ export function AddStoreModal({ isOpen, onClose }: AddStoreModalProps) {
     }
 
     
-    const installUrl = `${process.env.NEXT_PUBLIC_BACKEND}/api/shopify/install?shop=${storeName.trim()}`;
+    const installUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/shopify/install?shop=${storeName.trim()}`;
     
     
     window.open(installUrl, '_blank', 'noopener,noreferrer');

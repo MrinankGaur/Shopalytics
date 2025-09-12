@@ -38,7 +38,7 @@ export interface LineItem {
   productId: string | null; 
 }
 
-const API_HOST = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_HOST = process.env.NEXT_PUBLIC_API_BASE_URL;
 const API_BASE_URL = `${API_HOST}/api`;
 
 const clientApiFetch = (url: string, options: RequestInit = {}) => {
