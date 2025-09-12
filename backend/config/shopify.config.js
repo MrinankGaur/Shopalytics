@@ -1,5 +1,5 @@
 const { shopifyApi, LATEST_API_VERSION } = require('@shopify/shopify-api');
-const { restResources } = require('@shopify/shopify-api/rest/admin/2024-07');
+const { restResources } = require('@shopify/shopify-api/rest/admin/2024-04');
 require('@shopify/shopify-api/adapters/node');
 
 const shopify = shopifyApi({
