@@ -1,189 +1,219 @@
-# Shopalytics
+# Shopalytics: A Multi-Tenant Shopify Insights Dashboard
 
-A full-stack multi-tenant Shopify analytics dashboard.
+Shopalytics is a full-stack, multi-tenant Shopify data ingestion and insights service, built as a submission for the Xeno Forward Deployed Engineer (FDE) Internship assignment. This project demonstrates a complete, production-ready workflow for onboarding multiple Shopify stores, syncing their core business data, and visualizing key performance indicators in a secure, professional web application.
 
-- Backend: Node.js, Express, Prisma (PostgreSQL), Shopify API
-- Frontend: Next.js App Router (React 19), TypeScript, Tailwind CSS, Recharts
+**Submission Date:** September 12, 2025
 
-## Features
-- Email/password authentication with JWT (httpOnly cookies)
-- Multi-tenant: link user accounts to multiple Shopify stores (tenants)
-- Shopify OAuth install flow and webhooks (orders/create)
-- Data sync for Products, Customers, Orders, and Line Items
-- Dashboard with charts: revenue over time, segmentation, sales by hour, best sellers, top customers
+---
 
-## Monorepo Structure
-- `backend/`: Express API + Prisma + Shopify integrations
-- `frontend/`: Next.js dashboard UI
+### ✨ Key Features
 
-## Prerequisites
-- Node.js 18+
-- npm 9+
-- PostgreSQL database
-- Shopify Partner account and a custom app for OAuth
+- **Secure Multi-Tenant Onboarding:** Seamlessly connect any Shopify store using the official OAuth 2.0 flow.
+- **Automated Data Ingestion:** Syncs core e-commerce data including Products, Customers, Orders, and Line Items.
+- **Real-time Sync via Webhooks:** Automatically updates the database when new orders are created in Shopify.
+- **Secure User Authentication:** A complete email/password authentication system using JWTs stored in secure `httpOnly` cookies. Features include registration, login, logout, and password management.
+- **Interactive Insights Dashboard:** A clean, modern, and responsive dashboard built with Next.js and Tailwind CSS.
+- **Tenant Isolation:** A store switcher allows users to view isolated data and metrics for each connected store.
+- **Advanced Data Visualization:** Includes professional charts for key metrics like Daily Revenue, Customer Segmentation, and Best-Selling Products.
+- **Full Store Management:** Users can add new stores, sync data on-demand, and securely delete stores and all their associated data.
 
-## Environment Variables
-Create `.env` files in `backend/` and `frontend/`.
+---
 
-### Backend (`backend/.env`)
-```
-# Server
-PORT=3000
-NODE_ENV=development
-HOST=http://localhost:3000
-CORS_ORIGIN=http://localhost:3001
+### ⚙️ Tech Stack
 
-# Auth
-JWT_SECRET=replace-with-a-long-random-string
+| Category | Technology |
+| :----------- | :--------------------------------------------------------------------------------- |
+| **Frontend** | Next.js, React, TypeScript, Tailwind CSS, Recharts, `lucide-react` |
+| **Backend** | Node.js, Express.js, Prisma ORM |
+| **Database** | PostgreSQL |
+| **Deployment** | Vercel (Frontend), Render (Backend), Supabase (Database) |
 
-# Database
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DBNAME?schema=public
+---
 
-# Shopify App
-SHOPIFY_API_KEY=your_app_api_key
-SHOPIFY_API_SECRET=your_app_api_secret
-```
+### 🏛️ High-Level Architecture
 
-Notes:
-- `HOST` must be the full URL of the backend reachable by Shopify (no protocol in shopify.config `hostName` after processing).
-- The server currently enables CORS for `http://localhost:3001`.
+The application is architected as a decoupled monorepo with a separate frontend and backend, which is a standard for modern, scalable web applications.
 
-### Frontend (`frontend/.env.local`)
-```
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
-```
+1. **Frontend (Next.js):** A server-side rendered application that handles all user-facing interactions, including the secure login and the interactive dashboard.
+2. **Backend (Node.js/Express):** A RESTful API that manages all business logic, including the Shopify OAuth flow, user authentication, webhook validation, and secure database operations.
+3. **Database (PostgreSQL):** A cloud-hosted PostgreSQL database that stores all application data, with a schema designed for multi-tenancy.
+4. **Shopify:** Acts as the external data source, communicating with the backend via the Admin API for bulk syncing and Webhooks for real-time events.
 
-## Installation
-From the repo root, install dependencies for both apps:
+---
+
+### 🚀 Getting Started
+
+To run this project locally, you will need Node.js, npm, and a running PostgreSQL instance.
+
+#### 1. Clone the Repository
 
 ```bash
-cd backend && npm install
-cd ../frontend && npm install
+git clone https://github.com/your-username/your-repo-name.git
+data-engineering
+cd your-repo-name
 ```
 
-## Database Setup (Prisma + PostgreSQL)
-In `backend/`:
+#### 2. Backend Setup
 
 ```bash
-# Generate Prisma client
-npx prisma generate
-
-# Apply migrations
-npx prisma migrate deploy
-# or during development
-npx prisma migrate dev
-```
-
-The Prisma schema defines models: `User`, `Tenant`, `Customer`, `Product`, `Order`, `LineItem` with composite unique constraints to support multi-tenancy.
-
-## Shopify App Configuration
-Create a custom app in your Shopify Partner dashboard and configure the following:
-
-- App URL: `http://localhost:3000`
-- Allowed redirection URL(s): `http://localhost:3000/api/shopify/callback`
-- Webhook subscriptions (Admin API 2024-07 or later):
-  - `orders/create` → Delivery URL: `http://localhost:3000/api/shopify/webhooks/orders/create`
-- Scopes: `read_products, read_orders, read_customers`
-
-Store the app credentials in `backend/.env` as `SHOPIFY_API_KEY` and `SHOPIFY_API_SECRET`.
-
-## Running Locally
-Open two terminals.
-
-### 1) Backend API (http://localhost:3000)
-```bash
+# Navigate to the backend directory
 cd backend
+
+# Install dependencies
+npm install
+
+# Create your environment file
+# (e.g., by copying from .env.example if provided)
+touch .env
+
+# Fill in your .env with your database URL, Shopify API keys, and a JWT secret.
+
+# Apply the database schema
+npx prisma migrate dev
+
+# Start the backend server
 npm run dev
+# Your backend will be running on http://localhost:3000
 ```
 
-Endpoints mounted in `server.js`:
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `POST /api/auth/change-password` (auth required)
-- `GET /api/tenants/me/data` (auth required)
-- `POST /api/tenants/:tenantId/sync` (auth required)
-- `POST /api/tenants/link` (auth required)
-- `DELETE /api/tenants/:tenantId` (auth required)
-- `GET /api/shopify/install?shop={shop-domain}`
-- `GET /api/shopify/callback`
-- `POST /api/shopify/webhooks/orders/create` (raw body webhook)
-- `GET /health`
+#### 3. Frontend Setup
 
-### 2) Frontend UI (http://localhost:3001)
 ```bash
+# Navigate to the frontend directory from the root
 cd frontend
+
+# Install dependencies
+npm install
+
+# Create your local environment file
+touch .env.local
+
+# Add the following line to your .env.local file:
+NEXT_PUBLIC_API_BASE_URL="http://localhost:3000"
+
+# Start the frontend server
 npm run dev
+# Your frontend will be running on http://localhost:3001
 ```
 
-Make sure `NEXT_PUBLIC_API_BASE_URL` points at the backend (default `http://localhost:3000`).
+#### 4. Ngrok for Shopify Integration
 
-## Auth Flow (Summary)
-1. User registers or logs in at the frontend; backend sets an httpOnly `token` cookie.
-2. Protected routes use `authenticateToken` middleware to authorize requests.
-3. A user can link to an existing `tenant` via `POST /api/tenants/link`.
+To test the Shopify installation and webhook flow locally, you must expose your backend server to the internet using ngrok.
 
-## Shopify Install Flow (Summary)
-1. Visit `GET /api/shopify/install?shop={your-shop.myshopify.com}`.
-2. Shopify redirects back to `GET /api/shopify/callback` with a session.
-3. The backend upserts a `Tenant` and stores `accessToken`, then redirects to the frontend at `/shopify/return` with `newTenantId` and `shop`.
-4. You can then call sync endpoints or let webhooks trigger updates.
+```bash
+ngrok http 3000 --host-header="localhost:3000"
+```
 
-## Data Sync
-- Webhooks: `orders/create` → validates webhook and triggers `syncOrders`.
-- Manual: `POST /api/tenants/:tenantId/sync` → calls `syncProducts`, `syncCustomers`, `syncOrders`.
+You must update your App URL in the Shopify Partner Dashboard and the `HOST` variable in your `backend/.env` file with the new ngrok URL.
 
-## Frontend Overview
-- App routes under `frontend/app/dashboard/*`
-- Charts in `frontend/components/*`
-- API client in `frontend/lib/clientApiService.ts`
+---
 
-Set `NEXT_PUBLIC_API_BASE_URL` to ensure all client fetches target your API server.
+### 📦 API Endpoints & Database Schema
 
-## Production Notes
-- Use HTTPS for both frontend and backend; set secure cookie flags accordingly.
-- Configure CORS and `HOST` to public URLs.
-- Run migrations on deploy (`prisma migrate deploy`).
-- Provide persistent PostgreSQL and environment secrets.
+#### Key API Endpoints
 
-## Scripts
-### Backend
-- `npm run dev` → start API with nodemon on port 3000
-- `npm start` → start API with Node
-- `npx prisma generate` → generate Prisma client
-- `npx prisma migrate deploy` → apply migrations in production
+All protected routes (marked with 🔒) require an active session cookie.
 
-### Frontend
-- `npm run dev` → start Next.js dev server on port 3001
-- `npm run build` → build
-- `npm start` → start production server
+| Method | Endpoint | Protection | Description |
+| --- | --- | --- | --- |
+| POST | /api/auth/register | Public | Register a new user. |
+| POST | /api/auth/login | Public | Log in a user and set a session cookie. |
+| POST | /api/auth/logout | Public | Log out a user and clear the session cookie. |
+| POST | /api/auth/change-password | 🔒 | Change the password for a logged-in user. |
+| GET | /api/shopify/install | Public | Starts the Shopify OAuth installation flow. |
+| GET | /api/shopify/callback | Public | Handles the secure callback from Shopify. |
+| POST | /api/tenants/link | 🔒 | Links a tenant to a logged-in user. |
+| POST | /api/tenants/:tenantId/sync | 🔒 | Triggers a full data sync for a tenant. |
+| GET | /api/tenants/me/data | 🔒 | Fetches all data for the logged-in user. |
+| DELETE | /api/tenants/:tenantId | 🔒 | Deletes a tenant and all its data. |
 
-## API Reference (Quick)
-Auth
-- `POST /api/auth/register` { email, password }
-- `POST /api/auth/login` { email, password }
-- `POST /api/auth/logout`
-- `POST /api/auth/change-password` { oldPassword, newPassword } (auth)
+---
 
-Tenants (auth)
-- `GET /api/tenants/me/data`
-- `POST /api/tenants/:tenantId/sync`
-- `POST /api/tenants/link` { tenantId }
-- `DELETE /api/tenants/:tenantId`
+### Database Schema (`schema.prisma`)
 
-Shopify
-- `GET /api/shopify/install?shop={shop}`
-- `GET /api/shopify/callback`
-- `POST /api/shopify/webhooks/orders/create`
+The schema is designed with a multi-tenant architecture, where all core data (Products, Customers, Orders, LineItems) is isolated by a `tenantId`.
 
-Health
-- `GET /health`
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
-## Troubleshooting
-- 401 on protected routes: ensure login cookie is set; check `JWT_SECRET`.
-- CORS issues: backend `cors` origin must match frontend origin.
-- Shopify `hostName` error: ensure `HOST` is set and has protocol (http/https); the config strips it.
-- Webhook validation failures: webhook must be sent to backend public URL and raw body must be used.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-## License
-MIT
+model Tenant {
+  id          String   @id @default(cuid())
+  storeUrl    String   @unique
+  accessToken String
+  createdAt   DateTime @default(now())
+  customers   Customer[]
+  products    Product[]
+  orders      Order[]
+  users       User[]     @relation("TenantToUser")
+  lineItems   LineItem[]
+}
+
+model Customer {
+  id        BigInt   @id
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  firstName String?
+  lastName  String?
+  email     String?
+  phone     String?
+  createdAt DateTime
+  orders    Order[]
+  @@unique([id, tenantId])
+}
+
+model Product {
+  id          BigInt     @id
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title       String
+  vendor      String?
+  productType String?
+  createdAt   DateTime
+  imageUrl    String?
+  lineItems   LineItem[]
+  @@unique([id, tenantId])
+}
+
+model Order {
+  id              BigInt     @id
+  tenantId        String
+  tenant          Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  totalPrice      Float
+  currency        String
+  financialStatus String?
+  createdAt       DateTime
+  customerId      BigInt?
+  customer        Customer?  @relation(fields: [customerId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: NoAction)
+  lineItems       LineItem[]
+  @@unique([id, tenantId])
+}
+
+model LineItem {
+  id         BigInt   @id
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId    BigInt
+  order      Order    @relation(fields: [orderId, tenantId], references: [id, tenantId], onDelete: Cascade, onUpdate: NoAction)
+  productId  BigInt?
+  product    Product? @relation(fields: [productId, tenantId], references: [id, tenantId], onDelete: SetNull, onUpdate: NoAction)
+  quantity   Int
+  price      Float
+  title      String
+  @@unique([id, tenantId])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  tenants   Tenant[] @relation("TenantToUser")
+}
+```
