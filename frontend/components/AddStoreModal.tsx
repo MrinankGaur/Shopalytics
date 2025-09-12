@@ -47,7 +47,7 @@ export function AddStoreModal({ isOpen, onClose }: AddStoreModalProps) {
           <X className="w-6 h-6" />
         </button>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Connect a New Store</h2>
-        <p className="text-gray-600 mb-6">Enter your store's ".myshopify.com" URL to begin the installation process in a new tab.</p>
+        <p className="text-gray-600 mb-6">Enter your store&apos;s &quot;.myshopify.com&quot; URL to begin the installation process in a new tab.</p>
         
         {error && <p className="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-sm">{error}</p>}
         

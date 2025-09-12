@@ -47,10 +47,9 @@ export function DashboardClient({ initialData, children }: { initialData: Tenant
     try {
       await clientApiService.linkTenant(newlyInstalledTenant.id);
       toast.success(`Successfully linked to ${newlyInstalledTenant.url}!`);
-      const updatedTenants = await fetchAndSetTenants();
       setSelectedTenantId(newlyInstalledTenant.id);
       setNewlyInstalledTenant(null);
-    } catch (error) {
+    } catch {
       toast.error('Failed to link the store.');
     } finally {
       setIsLinking(false);
@@ -68,7 +67,7 @@ export function DashboardClient({ initialData, children }: { initialData: Tenant
       } else {
         throw new Error("Sync failed");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during sync.");
     } finally {
       setIsSyncing(false);

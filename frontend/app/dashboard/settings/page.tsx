@@ -48,7 +48,7 @@ export default function SettingsPage() {
                 const data = await res.json();
                 setError(data.error || 'Failed to change password.');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred.');
         } finally {
             setLoading(false);
@@ -69,7 +69,7 @@ export default function SettingsPage() {
             await fetchAndSetTenants();
             setIsModalOpen(false);
             setTenantToDelete(null);
-        } catch (error) {
+        } catch {
             alert('Failed to delete store.');
         } finally {
             setIsDeleting(false);

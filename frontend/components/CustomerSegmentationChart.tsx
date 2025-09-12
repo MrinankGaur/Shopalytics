@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { PieLabelRenderProps } from 'recharts';
 import { Customer } from '../lib/clientApiService';
 
 interface ChartProps {
@@ -14,7 +15,22 @@ const COLORS = {
 };
 
 
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
+const renderCustomizedLabel = (props: PieLabelRenderProps) => {
+  const {
+    cx = 0,
+    cy = 0,
+    midAngle = 0,
+    innerRadius = 0,
+    outerRadius = 0,
+    percent = 0,
+  } = props as Partial<PieLabelRenderProps> & {
+    cx?: number;
+    cy?: number;
+    midAngle?: number;
+    innerRadius?: number;
+    outerRadius?: number;
+    percent?: number;
+  };
 
   if (percent < 0.05) {
     return null;
@@ -50,7 +66,7 @@ export function CustomerSegmentationChart({ customers }: ChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={renderCustomizedLabel} 
+              label={(props) => renderCustomizedLabel(props as PieLabelRenderProps)} 
               outerRadius={110}
               innerRadius={60} 
               fill="#8884d8"

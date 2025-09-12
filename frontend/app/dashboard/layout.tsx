@@ -5,6 +5,8 @@ import { DashboardClient } from './DashBoardClient';
 import { Tenant } from '../../lib/clientApiService';
 import { NewStoreNotification } from '../../components/NewStoreNotification';
 
+export const dynamic = 'force-dynamic';
+
 async function getInitialData(): Promise<Tenant[]> {
     return await serverApiService.getDataOnServer();
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Spinner } from '../../../../components/Spinner'; 
 
-export default function ShopifyReturnPage() {
+function ReturnClient() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -12,12 +12,10 @@ export default function ShopifyReturnPage() {
     const shopUrl = searchParams.get('shop');
 
     if (newTenantId && shopUrl) {
-      
       localStorage.setItem('newlyInstalledTenant', JSON.stringify({
         id: newTenantId,
         url: shopUrl
       }));
-      
       window.close();
     }
   }, [searchParams]);
@@ -27,5 +25,18 @@ export default function ShopifyReturnPage() {
       <Spinner />
       <p className="mt-4 text-gray-600">Finalizing connection, this window will close automatically...</p>
     </div>
+  );
+}
+
+export default function ShopifyReturnPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Spinner />
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    }>
+      <ReturnClient />
+    </Suspense>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Customer } from '../../lib/apiService';
+import { Customer } from '../lib/clientApiService';
 
 interface TopCustomersListProps {
   customers: Customer[];

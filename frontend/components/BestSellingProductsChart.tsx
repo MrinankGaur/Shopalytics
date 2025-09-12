@@ -35,7 +35,7 @@ export function BestSellingProductsChart({ orders, products }: ChartProps) {
     .slice(0, 5); 
 
 
-  const chartHeight = chartData.length * 60 + 60; 
+  // chart height is managed via container CSS
   
 
   return (

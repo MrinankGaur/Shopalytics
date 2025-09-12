@@ -51,7 +51,7 @@ export default function LoginPage() {
         const data = await res.json();
         setError(data.error || 'Login failed. Please check your credentials.');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-indigo-600 hover:underline font-semibold">Register here</Link>
         </p>
       </div>
