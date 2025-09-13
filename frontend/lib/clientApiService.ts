@@ -50,7 +50,7 @@ const clientApiFetch = (url: string, options: RequestInit = {}) => {
 };
 
 export const clientApiService = {
-  login: (email: string, password: string) => clientApiFetch(`${API_BASE_URL}/auth/login`, {
+  login: (email: string, password: string) => clientApiFetch(`https://1b1bda0b7a35.ngrok-free.app/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
