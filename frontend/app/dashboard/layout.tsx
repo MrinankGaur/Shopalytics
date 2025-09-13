@@ -28,11 +28,9 @@ export default async function DashboardLayout({
   const token = cookieStore.get('token');
   
   if (!token) {
-    console.log('No token found, redirecting to login');
     redirect('/login');
   }
 
-  console.log('Token found, proceeding to dashboard');
   const initialData = await getInitialData();
 
   return (
