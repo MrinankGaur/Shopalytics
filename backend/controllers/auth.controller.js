@@ -24,13 +24,19 @@ const login = async (req, res) => {
         
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
         
+        // Set cookie for same-origin requests
         res.cookie('token', token, { 
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'none', 
+            sameSite: 'lax', 
             maxAge: 24 * 60 * 60 * 1000
         });
-        res.status(200).json({ message: "Login successful." });
+        
+        // Also return token in response for cross-origin requests
+        res.status(200).json({ 
+            message: "Login successful.",
+            token: token
+        });
     } catch (error) {
         res.status(500).json({ error: "Login failed." });
     }

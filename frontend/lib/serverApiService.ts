@@ -10,6 +10,7 @@ const serverApiFetch = async (url: string, options: RequestInit = {}) => {
   const headers = new Headers(options.headers);
   if (token) {
     headers.set('Cookie', `token=${token.value}`);
+    headers.set('Authorization', `Bearer ${token.value}`);
   }
   return fetch(url, { ...options, headers, cache: 'no-store' });
 };

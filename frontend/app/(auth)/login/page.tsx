@@ -49,6 +49,11 @@ export default function LoginPage() {
       console.log('Login response headers:', res.headers);
       
       if (res.ok) {
+        const data = await res.json();
+        // Store token in localStorage for cross-origin requests
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
         toast.success('Login successful!');
         console.log('Login successful, redirecting to dashboard');
         // Small delay to ensure cookie is set

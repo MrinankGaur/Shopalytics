@@ -42,8 +42,16 @@ const API_HOST = process.env.NEXT_PUBLIC_API_BASE_URL;
 const API_BASE_URL = `${API_HOST}/api`;
 
 const clientApiFetch = (url: string, options: RequestInit = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  
+  const headers = new Headers(options.headers);
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  
   return fetch(url, {
     ...options,
+    headers,
     credentials: 'include',
     cache: 'no-store',
   });
@@ -60,9 +68,15 @@ export const clientApiService = {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   }),
-  logout: () => clientApiFetch(`${API_BASE_URL}/auth/logout`, {
-    method: 'POST',
-  }),
+  logout: () => {
+    // Clear localStorage token
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+    }
+    return clientApiFetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+    });
+  },
   linkTenant: (tenantId: string) => clientApiFetch(`${API_BASE_URL}/tenants/link`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
