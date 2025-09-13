@@ -4,14 +4,14 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files from backend directory
-COPY backend/package*.json ./
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code from backend directory
-COPY backend/ ./
+# Copy source code
+COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
