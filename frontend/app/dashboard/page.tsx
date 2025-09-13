@@ -5,23 +5,19 @@ import StatCard from '../../components/StatCard';
 import TopCustomersList from '../../components/TopCustomersList';
 import { CustomerSegmentationChart } from '../../components/CustomerSegmentationChart';
 import { Customer, Order } from '../../lib/clientApiService';
+import { EmptyState } from '../../components/EmptyState'; // <-- IMPORT THE NEW COMPONENT
 
 export default function DashboardOverviewPage() {
-  
   const { selectedTenant } = useDashboard();
 
+  // --- THIS IS THE FIX ---
+  // If no tenant is selected, render the helpful EmptyState component.
   if (!selectedTenant) {
-    return (
-        <div className="flex items-center justify-center h-full">
-            <div className="text-center p-10 bg-white rounded-lg shadow">
-                <h2 className="text-xl font-semibold text-gray-700">No Store Selected</h2>
-                <p className="text-gray-500 mt-2">Connect a store or select one from the dropdown to view its data.</p>
-            </div>
-        </div>
-    );
+    return <EmptyState />;
   }
+  // -----------------------
 
-  
+  // --- Data Processing for the selected tenant ---
   const { customers, orders } = selectedTenant;
   const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
   const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
@@ -41,6 +37,7 @@ export default function DashboardOverviewPage() {
             <StatCard title="Total Orders" value={orders.length} />
             <StatCard title="Total Customers" value={customers.length} />
         </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <CustomerSegmentationChart customers={customers} />
             <TopCustomersList customers={topCustomers} />

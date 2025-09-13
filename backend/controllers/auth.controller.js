@@ -24,17 +24,23 @@ const login = async (req, res) => {
         
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
         
-        res.cookie('token', token, { 
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'lax', 
-            maxAge: 24 * 60 * 60 * 1000
+        // --- THIS IS THE FIX ---
+        // Change the sameSite policy to 'lax' to allow the cookie to be sent
+        // during the cross-origin redirect after login.
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Will be true on Railway/Render
+            sameSite: 'lax', // Use 'lax' for cross-site top-level navigation
+            maxAge: 24 * 60 * 60 * 1000,
         });
+        // -----------------------
+        
         res.status(200).json({ message: "Login successful." });
     } catch (error) {
         res.status(500).json({ error: "Login failed." });
     }
 };
+
 
 const logout = (req, res) => {
     res.clearCookie('token');
