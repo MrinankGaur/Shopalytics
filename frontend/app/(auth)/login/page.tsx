@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { clientApiService } from '../../../lib/clientApiService';
 import { Package } from 'lucide-react';
 import { PasswordInput } from '../../../components/PasswordInput';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -45,14 +46,17 @@ export default function LoginPage() {
     try {
       const res = await clientApiService.login(email, password);
       if (res.ok) {
+        toast.success('Login successful!');
         router.push('/dashboard');
         router.refresh();
       } else {
         const data = await res.json();
         setError(data.error || 'Login failed. Please check your credentials.');
+        toast.error(data.error || 'Login failed. Please check your credentials.');
       }
     } catch {
       setError('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

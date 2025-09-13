@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { clientApiService } from '../../../lib/clientApiService';
 import { Package } from 'lucide-react';
 import { PasswordInput } from '../../../components/PasswordInput';
+import { toast } from 'sonner';
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,14 +44,18 @@ export default function RegisterPage() {
     try {
       const res = await clientApiService.register(email, password);
       if (res.ok) {
-        alert('Registration successful! Please log in.');
-        router.push('/login');
+        toast.success('Registration successful! Please log in.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1500);
       } else {
         const data = await res.json();
         setError(data.error || 'Registration failed.');
+        toast.error(data.error || 'Registration failed.');
       }
     } catch {
       setError('An error occurred.');
+      toast.error('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

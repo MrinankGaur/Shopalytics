@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AddStoreModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export function AddStoreModal({ isOpen, onClose }: AddStoreModalProps) {
     e.preventDefault();
     if (!storeName.trim() || !storeName.includes('.myshopify.com')) {
       setError('Please enter a valid .myshopify.com store URL.');
+      toast.error('Please enter a valid .myshopify.com store URL.');
       return;
     }
 
@@ -26,6 +28,7 @@ export function AddStoreModal({ isOpen, onClose }: AddStoreModalProps) {
     
     window.open(installUrl, '_blank', 'noopener,noreferrer');
     
+    toast.success('Opening Shopify installation page...');
     
     onClose();
   };

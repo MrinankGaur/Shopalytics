@@ -5,7 +5,8 @@ import { clientApiService } from '../../../lib/clientApiService';
 import { useDashboard } from '../DashboardContext';
 import { Trash2 } from 'lucide-react';
 import { ConfirmationModal } from '../../../components/ConfirmationModal';
-import { PasswordInput } from '../../../components/PasswordInput'; 
+import { PasswordInput } from '../../../components/PasswordInput';
+import { toast } from 'sonner'; 
 
 export default function SettingsPage() {
     const [oldPassword, setOldPassword] = useState('');
@@ -28,11 +29,13 @@ export default function SettingsPage() {
 
         if (newPassword.length <= 6) {
             setError('New password must be longer than 6 characters.');
+            toast.error('New password must be longer than 6 characters.');
             return;
         }
 
         if (newPassword !== confirmPassword) {
             setError('New passwords do not match.');
+            toast.error('New passwords do not match.');
             return;
         }
 
@@ -41,15 +44,18 @@ export default function SettingsPage() {
             const res = await clientApiService.changePassword(oldPassword, newPassword);
             if (res.ok) {
                 setSuccess('Password changed successfully!');
+                toast.success('Password changed successfully!');
                 setOldPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
             } else {
                 const data = await res.json();
                 setError(data.error || 'Failed to change password.');
+                toast.error(data.error || 'Failed to change password.');
             }
         } catch {
             setError('An error occurred.');
+            toast.error('An error occurred.');
         } finally {
             setLoading(false);
         }
@@ -65,12 +71,12 @@ export default function SettingsPage() {
         setIsDeleting(true);
         try {
             await clientApiService.deleteTenant(tenantToDelete);
-            alert('Store deleted successfully.');
+            toast.success('Store deleted successfully.');
             await fetchAndSetTenants();
             setIsModalOpen(false);
             setTenantToDelete(null);
         } catch {
-            alert('Failed to delete store.');
+            toast.error('Failed to delete store.');
         } finally {
             setIsDeleting(false);
         }
