@@ -25,13 +25,17 @@ const login = async (req, res) => {
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
         
         // --- THIS IS THE FIX ---
-        // Change the sameSite policy to 'lax' to allow the cookie to be sent
-        // during the cross-origin redirect after login.
+        // We use different cookie settings for production vs. development.
+        const isProduction = process.env.NODE_ENV === 'production';
+
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Will be true on Railway/Render
-            sameSite: 'lax', // Use 'lax' for cross-site top-level navigation
-            maxAge: 24 * 60 * 60 * 1000,
+            // 'secure' must be true in production so cookies are only sent over HTTPS.
+            secure: isProduction,
+            // 'sameSite' must be 'none' for cross-domain cookies in production.
+            // 'lax' is fine for localhost development.
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
         });
         // -----------------------
         
