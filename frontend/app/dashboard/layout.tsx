@@ -4,11 +4,18 @@ import { serverApiService } from '../../lib/serverApiService';
 import { DashboardClient } from './DashBoardClient';
 import { Tenant } from '../../lib/clientApiService';
 import { NewStoreNotification } from '../../components/NewStoreNotification';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
 async function getInitialData(): Promise<Tenant[]> {
-    return await serverApiService.getDataOnServer();
+    try {
+        return await serverApiService.getDataOnServer();
+    } catch (error) {
+        console.error("Failed to fetch initial data:", error);
+        return [];
+    }
 }
 
 export default async function DashboardLayout({
@@ -16,6 +23,14 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Check if user is authenticated
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token');
+  
+  if (!token) {
+    redirect('/login');
+  }
+
   const initialData = await getInitialData();
 
   return (
