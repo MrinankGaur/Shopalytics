@@ -45,10 +45,17 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await clientApiService.login(email, password);
+      console.log('Login response status:', res.status);
+      console.log('Login response headers:', res.headers);
+      
       if (res.ok) {
         toast.success('Login successful!');
-        router.push('/dashboard');
-        router.refresh();
+        console.log('Login successful, redirecting to dashboard');
+        // Small delay to ensure cookie is set
+        setTimeout(() => {
+          router.push('/dashboard');
+          router.refresh();
+        }, 100);
       } else {
         const data = await res.json();
         setError(data.error || 'Login failed. Please check your credentials.');
