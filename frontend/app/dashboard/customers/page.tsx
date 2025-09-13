@@ -8,7 +8,12 @@ export default function CustomersPage() {
     const { selectedTenant } = useDashboard();
 
     if (!selectedTenant) {
-        return <div className="text-center p-10 bg-white rounded-lg shadow"><h2 className="text-xl">No Store Selected</h2></div>;
+        return (
+            <div className="text-center p-10 bg-white rounded-lg shadow">
+                <h2 className="text-xl font-semibold text-gray-700">No Store Selected</h2>
+                <p className="text-gray-500 mt-2">Please select a store from the dropdown to view its customers.</p>
+            </div>
+        );
     }
 
     const { customers, orders } = selectedTenant;
