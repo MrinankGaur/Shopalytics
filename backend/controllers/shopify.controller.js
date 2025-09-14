@@ -68,7 +68,7 @@ const callback = async (req, res) => {
         }
         // ------------------------------------
         
-        res.redirect(`http://localhost:3001/shopify/return?newTenantId=${tenant.id}&shop=${tenant.storeUrl}`);
+        res.redirect(`${process.env.HOST_URL}/shopify/return?newTenantId=${tenant.id}&shop=${tenant.storeUrl}`);
 
     } catch (error) {
         console.error('Failed during OAuth callback:', error);
