@@ -28,6 +28,7 @@ export default function CustomersPage() {
         <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-6">All Customers</h1>
             <TopCustomersList customers={sortedCustomers} />
+            <h1 className="text-3xl font-bold text-gray-800 mb-6 mt-6">Customers Data</h1>
             <AllCustomersTable customers={sortedCustomers} />
         </div>
     );
