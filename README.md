@@ -17,7 +17,7 @@ Shopalytics is a complete, production-ready, full-stack multi-tenant Shopify dat
 - **🏪 Multi-Store Management:** Store switcher allows users to view isolated data and metrics for each connected store
 - **📈 Advanced Analytics:** Professional charts for Daily Revenue, Customer Segmentation, Best-Selling Products, Sales by Hour, and Abandoned Checkouts
 - **🛠️ Complete CRUD Operations:** Add, sync, and securely delete stores with all associated data
-- **🚀 Production Ready:** Deployed on Vercel (Frontend) and Render (Backend) with PostgreSQL database
+- **🚀 Production Ready:** Deployed on Vercel (Frontend) and Railway (Backend) with PostgreSQL database
 
 ---
 
@@ -29,7 +29,7 @@ Shopalytics is a complete, production-ready, full-stack multi-tenant Shopify dat
 | **Backend** | Node.js, Express.js, Prisma ORM, Shopify API | Node.js 18+, Express 4.18.2 |
 | **Database** | PostgreSQL with Prisma ORM | PostgreSQL 15+ |
 | **Authentication** | JWT with httpOnly cookies, bcrypt | jsonwebtoken 9.0.2 |
-| **Deployment** | Vercel (Frontend), Render (Backend), Railway (Alternative) | Production Ready |
+| **Deployment** | Vercel (Frontend), Railway (Backend), Railway (Alternative) | Production Ready |
 | **Development** | TypeScript, ESLint, Nodemon, Turbopack | Full Type Safety |
 
 ---
@@ -38,7 +38,7 @@ Shopalytics is a complete, production-ready, full-stack multi-tenant Shopify dat
 
 The application is architected as a decoupled monorepo with a separate frontend and backend, which is a standard for modern, scalable web applications.
 
-1. **Frontend (Next.js):** A server-side rendered application that handles all user-facing interactions, including the secure login and the interactive dashboard.
+1. **Frontend (Next.js):** A server-side Railwayed application that handles all user-facing interactions, including the secure login and the interactive dashboard.
 2. **Backend (Node.js/Express):** A RESTful API that manages all business logic, including the Shopify OAuth flow, user authentication, webhook validation, and secure database operations.
 3. **Database (PostgreSQL):** A cloud-hosted PostgreSQL database that stores all application data, with a schema designed for multi-tenancy.
 4. **Shopify:** Acts as the external data source, communicating with the backend via the Admin API for bulk syncing and Webhooks for real-time events.
@@ -285,7 +285,7 @@ Shopalytics/
 │   │   └── migrations/         # Database migration files
 │   ├── server.js               # Main server file
 │   ├── package.json            # Backend dependencies
-│   ├── render.yaml             # Render deployment config
+│   ├── Railway.yaml             # Railway deployment config
 │   └── railway.json            # Railway deployment config
 ├── frontend/                   # Next.js React application
 │   ├── app/                    # Next.js 13+ app directory
@@ -323,7 +323,7 @@ Shopalytics/
 The application is deployed using modern cloud platforms:
 
 - **Frontend**: [shopalytics.vercel.app](https://shopalytics.vercel.app) - Live production site on Vercel
-- **Backend**: [Render](https://render.com/) - Containerized Node.js deployment
+- **Backend**: [Railway](https://Railway.com/) - Containerized Node.js deployment
 - **Database**: [Supabase](https://supabase.com/) - Managed PostgreSQL with real-time features
 - **Alternative**: [Railway](https://railway.app/) - Full-stack deployment option
 
@@ -415,5 +415,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Shopify](https://shopify.dev/) for the comprehensive API and documentation
 - [Next.js](https://nextjs.org/) for the amazing React framework
 - [Prisma](https://prisma.io/) for the excellent ORM
-- [Vercel](https://vercel.com/) and [Render](https://render.com/) for hosting
+- [Vercel](https://vercel.com/) and [Railway](https://Railway.com/) for hosting
 - [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
