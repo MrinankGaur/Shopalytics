@@ -12,7 +12,27 @@ export function DashboardProvider({ initialData, children }: { initialData: Tena
   const [isLoading, setIsLoading] = useState(true);
   
   const [allTenants, setAllTenants] = useState<Tenant[]>(initialData);
-  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(initialData[0]?.id || null);
+  
+  // Initialize selectedTenantId from localStorage or fallback to first tenant
+  const getInitialSelectedTenantId = () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('selectedTenantId');
+      if (stored && initialData.some(tenant => tenant.id === stored)) {
+        return stored;
+      }
+    }
+    return initialData[0]?.id || null;
+  };
+  
+  const [selectedTenantId, setSelectedTenantIdState] = useState<string | null>(getInitialSelectedTenantId());
+  
+  // Wrapper function that updates state and localStorage
+  const setSelectedTenantId = (id: string) => {
+    setSelectedTenantIdState(id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedTenantId', id);
+    }
+  };
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -28,8 +48,23 @@ export function DashboardProvider({ initialData, children }: { initialData: Tena
         if (res.ok) {
           const data = await res.json();
           setAllTenants(data);
-          if (data.length > 0 && !selectedTenantId) {
-            setSelectedTenantId(data[0].id);
+          
+          // Check if current selectedTenantId is still valid, if not, use localStorage or first tenant
+          if (data.length > 0) {
+            const currentSelectedId = selectedTenantId;
+            const isCurrentIdValid = currentSelectedId && data.some((t: Tenant) => t.id === currentSelectedId);
+            
+            if (!isCurrentIdValid) {
+              // Try to restore from localStorage first
+              const storedId = typeof window !== 'undefined' ? localStorage.getItem('selectedTenantId') : null;
+              const isStoredIdValid = storedId && data.some((t: Tenant) => t.id === storedId);
+              
+              if (isStoredIdValid) {
+                setSelectedTenantId(storedId);
+              } else {
+                setSelectedTenantId(data[0].id);
+              }
+            }
           }
           setIsAuthenticated(true);
         } else {
@@ -48,8 +83,18 @@ export function DashboardProvider({ initialData, children }: { initialData: Tena
     try {
       const data = await clientApiService.getData().then(res => res.json());
       setAllTenants(data);
+      
+      // Check if current selectedTenantId is still valid
       if (data.length > 0 && !data.some((t: Tenant) => t.id === selectedTenantId)) {
-        setSelectedTenantId(data[0].id);
+        // Try to restore from localStorage first
+        const storedId = typeof window !== 'undefined' ? localStorage.getItem('selectedTenantId') : null;
+        const isStoredIdValid = storedId && data.some((t: Tenant) => t.id === storedId);
+        
+        if (isStoredIdValid) {
+          setSelectedTenantId(storedId);
+        } else {
+          setSelectedTenantId(data[0].id);
+        }
       }
       return data;
     } catch (error) {
