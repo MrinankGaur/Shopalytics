@@ -35,8 +35,8 @@ export default function DashboardOverviewPage() {
             <StatCard title="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} />
             <StatCard title="Avg. Order Value (AOV)" value={`$${averageOrderValue.toFixed(2)}`} />
             <StatCard title="Total Orders" value={orders.length} />
-            <StatCard title="Carts Created" value={cartsCreated} />
-            <StatCard title="Abandoned Carts" value={abandonedCarts} />
+            <StatCard title="Checkouts Initiated" value={cartsCreated} />
+            <StatCard title="Checkouts Abandoned" value={abandonedCarts} />
 
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
