@@ -4,6 +4,7 @@ require('./utils/bigint.util'); // Handles BigInt serialization for JSON respons
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const webhookRoutes = require('./routes/webhook.routes');
 
 // --- ROUTE IMPORTS ---
 const authRoutes = require('./routes/auth.routes');
@@ -28,8 +29,8 @@ app.use(cookieParser());
 
 // 3. Webhook Route: This route requires the raw, unparsed request body for HMAC verification,
 //    so it must be registered BEFORE the express.json() parser.
+app.use('/api/webhooks', webhookRoutes);
 app.use('/api/shopify', shopifyRoutes.webhookRouter);
-
 // 4. JSON Parser: This parses JSON bodies for all subsequent routes.
 app.use(express.json());
 

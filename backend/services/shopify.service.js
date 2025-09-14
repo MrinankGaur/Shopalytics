@@ -64,6 +64,7 @@ async function syncOrders(tenantId, storeUrl, accessToken) {
         totalPrice: parseFloat(order.total_price),
         financialStatus: order.financial_status,
         customerId: order.customer ? order.customer.id : null,
+        checkoutId: order.checkout_id,
       },
       create: {
         id: order.id,
@@ -73,6 +74,7 @@ async function syncOrders(tenantId, storeUrl, accessToken) {
         financialStatus: order.financial_status,
         createdAt: new Date(order.created_at),
         customerId: order.customer ? order.customer.id : null,
+        checkoutId: order.checkout_id,
       },
     });
 

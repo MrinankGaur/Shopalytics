@@ -5,6 +5,15 @@ export interface Product {
   productType: string | null; 
   imageUrl: string | null;
 }
+export interface Checkout {
+  id: string;
+  totalPrice: number;
+  currency: string;
+  customerEmail: string | null;
+  createdAt: string;
+  webUrl: string | null; // This is the recovery link
+  updatedAt: string;
+}
 export interface Customer { 
   id: string; 
   firstName: string | null; 
@@ -23,13 +32,15 @@ export interface Order {
   createdAt: string; 
   customer?: { id: string }; 
   lineItems?: LineItem[];
+  checkoutId: string | null;
 }
 export interface Tenant { 
   id: string; 
   storeUrl: string; 
   products: Product[]; 
   customers: Customer[]; 
-  orders: Order[]; 
+  orders: Order[];
+  checkouts: Checkout[]; 
 }
 export interface LineItem { 
   id: string; 
