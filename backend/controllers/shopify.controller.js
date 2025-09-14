@@ -32,7 +32,7 @@ const callback = async (req, res) => {
             select: { id: true, storeUrl: true }
         });
         
-        // --- Dynamic Webhook Registration ---
+        
         console.log("Registering webhooks for", session.shop);
         const webhookEndpoint = `${process.env.HOST}/api/webhooks/shopify/${tenant.id}`;
         const webhookTopics = [
@@ -48,13 +48,13 @@ const callback = async (req, res) => {
         ];
         const client = new shopify.clients.Rest({ session });
 
-        // First, delete existing webhooks for this shop to avoid duplicates on re-install
+        
         const existingWebhooks = await client.get({ path: "webhooks" });
         for (const webhook of existingWebhooks.body.webhooks) {
             await client.delete({ path: `webhooks/${webhook.id}` });
         }
 
-        // Now, register the new webhooks
+        
         for (const topic of webhookTopics) {
             try {
                 await client.post({
@@ -66,7 +66,7 @@ const callback = async (req, res) => {
                 console.error(`❌ Failed to register webhook: ${topic}`, error.message);
             }
         }
-        // ------------------------------------
+        
         
         res.redirect(`${process.env.HOST_URL}/shopify/return?newTenantId=${tenant.id}&shop=${tenant.storeUrl}`);
 

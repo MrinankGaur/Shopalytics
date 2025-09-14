@@ -1,6 +1,6 @@
 import { Sidebar } from '../../components/Sidebar';
 import { serverApiService } from '../../lib/serverApiService';
-import { DashboardProvider } from './DashboardProvider'; // Corrected import name
+import { DashboardProvider } from './DashboardProvider'; 
 import { Tenant } from '../../lib/clientApiService';
 import { Header } from '../../components/Header';
 import { NewStoreNotification } from '../../components/NewStoreNotification';

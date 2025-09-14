@@ -26,10 +26,7 @@ const getDataForUser = async (req, res) => {
                         products: true,
                         customers: { include: { _count: { select: { orders: true } } } },
                         orders: { include: { customer: true, lineItems: true } },
-                        // --- THIS IS THE FIX ---
-                        // Ensure checkouts are included in the data payload.
                         checkouts: true,
-                        // -----------------------
                     },
                 },
             },

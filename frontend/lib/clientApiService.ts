@@ -11,7 +11,7 @@ export interface Checkout {
   currency: string;
   customerEmail: string | null;
   createdAt: string;
-  webUrl: string | null; // This is the recovery link
+  webUrl: string | null; 
   updatedAt: string;
 }
 export interface Customer { 

@@ -4,7 +4,7 @@ import { useDashboard } from './DashboardContext';
 import StatCard from '../../components/StatCard';
 import TopCustomersList from '../../components/TopCustomersList';
 import { CustomerSegmentationChart } from '../../components/CustomerSegmentationChart';
-import { AbandonedCheckoutsChart } from '../../components/AbandonedCheckoutsChart'; // <-- IMPORT NEW CHART
+import { AbandonedCheckoutsChart } from '../../components/AbandonedCheckoutsChart'; 
 import { Customer, Order } from '../../lib/clientApiService';
 import { EmptyState } from '../../components/EmptyState';
 
@@ -15,7 +15,7 @@ export default function DashboardOverviewPage() {
     return <EmptyState />;
   }
 
-  const { customers, orders, checkouts } = selectedTenant; // <-- Get checkouts from context
+  const { customers, orders, checkouts } = selectedTenant; 
   const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
   const averageOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
   
@@ -35,22 +35,15 @@ export default function DashboardOverviewPage() {
             <StatCard title="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} />
             <StatCard title="Avg. Order Value (AOV)" value={`$${averageOrderValue.toFixed(2)}`} />
             <StatCard title="Total Orders" value={orders.length} />
-            {/* --- NEW STAT CARD --- */}
             <StatCard title="Carts Created" value={cartsCreated} />
             <StatCard title="Abandoned Carts" value={abandonedCarts} />
 
         </div>
-        
-        {/* --- THIS IS THE FIX --- */}
-        {/* Replace the AbandonedCheckoutsList with the new chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <CustomerSegmentationChart customers={customers} />
             <TopCustomersList customers={topCustomers} />
         </div>
-
-        {/* The new chart now takes up the full width below */}
         <AbandonedCheckoutsChart checkouts={checkouts} orders={orders} />
-        {/* ----------------------- */}
     </div>
   );
 }

@@ -37,7 +37,6 @@ export default function LoginPage() {
     try {
       const res = await clientApiService.login(email, password);
       if (res.ok) {
-        // Full page reload to ensure cookie is included
         window.location.assign('/dashboard');
       } else {
         const data = await res.json();

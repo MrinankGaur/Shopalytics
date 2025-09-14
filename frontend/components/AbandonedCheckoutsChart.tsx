@@ -9,25 +9,22 @@ interface ChartProps {
   orders: Order[];
 }
 
-/**
- * A client-side line chart component that visualizes the number of
- * abandoned checkouts over the last 30 days.
- */
+
 export function AbandonedCheckoutsChart({ checkouts, orders }: ChartProps) {
-  // Process the data to get a count of abandoned checkouts per day for the last 30 days
+
   const last30Days = subDays(new Date(), 30);
   const dailyCheckoutsMap = new Map<string, number>();
 
-  // Initialize all days in the last 30 days with a count of 0
+
   const interval = eachDayOfInterval({ start: last30Days, end: new Date() });
   interval.forEach(day => {
       dailyCheckoutsMap.set(format(startOfDay(day), 'MMM dd'), 0);
   });
   
-  // Get completed checkout IDs to filter out completed checkouts
+
   const completedCheckoutIds = new Set(orders.map(order => order.checkoutId).filter(Boolean));
   
-  // Filter and count only the abandoned checkouts within the date range
+ 
   checkouts
     .filter(checkout => 
       new Date(checkout.createdAt) >= last30Days && 

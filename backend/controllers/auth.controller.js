@@ -1,12 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../config/prisma.config');
-const crypto = require('crypto'); // Ensure crypto is imported for future use if needed
+const crypto = require('crypto'); 
 
-/**
- * Handles new user registration.
- * Hashes the password and saves the new user to the database.
- */
 const register = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -18,11 +14,6 @@ const register = async (req, res) => {
     }
 };
 
-/**
- * Handles user login.
- * Verifies credentials and sets a secure, httpOnly cookie for session management.
- * Uses a production-ready cookie policy.
- */
 const login = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -32,22 +23,16 @@ const login = async (req, res) => {
         }
         
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
-        
-        // --- THIS IS THE FINAL FIX ---
-        // Use different cookie settings for production vs. development.
+       
         const isProduction = process.env.NODE_ENV === 'production';
 
         res.cookie('token', token, {
             httpOnly: true,
-            // 'secure' must be true in production so cookies are only sent over HTTPS.
-            // It must be false for localhost HTTP.
+            
             secure: isProduction,
-            // 'sameSite' must be 'none' for cross-domain cookies in production.
-            // 'lax' is the default and works perfectly for localhost development.
             sameSite: isProduction ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
         });
-        // -----------------------
         
         res.status(200).json({ message: "Login successful." });
     } catch (error) {
@@ -56,18 +41,13 @@ const login = async (req, res) => {
     }
 };
 
-/**
- * Handles user logout by clearing the authentication cookie.
- */
+
 const logout = (req, res) => {
     res.clearCookie('token');
     res.status(200).json({ message: "Logged out successfully." });
 };
 
-/**
- * Handles password changes for an authenticated user.
- * Verifies the old password before updating to the new one.
- */
+
 const changePassword = async (req, res) => {
     const { userId } = req.user;
     const { oldPassword, newPassword } = req.body;

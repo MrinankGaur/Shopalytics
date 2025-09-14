@@ -5,11 +5,11 @@ const handleShopifyWebhook = async (req, res) => {
   const topic = req.get("x-shopify-topic");
   const tenantId = req.params.tenantId;
   const shopDomain = req.get("x-shopify-shop-domain");
-  const body = req.body; // already parsed JSON
+  const body = req.body; 
 
   console.log(`🚀 Webhook received for topic: ${topic} from ${shopDomain}`);
 
-  // ✅ Acknowledge immediately so Shopify doesn’t retry
+ 
   res.status(200).send();
 
   try {

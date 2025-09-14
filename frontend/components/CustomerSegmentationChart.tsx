@@ -56,8 +56,7 @@ export function CustomerSegmentationChart({ customers }: ChartProps) {
   ];
 
   return (
-    // --- THIS IS THE FIX ---
-    // Make the container a flex column that fills the available height (h-full)
+
     <div className="bg-white rounded-lg shadow-md p-6 border h-full flex flex-col">
       <h3 className="text-xl font-bold text-gray-800 mb-4">Customer Segmentation</h3>
       {customers.length > 0 ? (
