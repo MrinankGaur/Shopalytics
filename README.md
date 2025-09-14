@@ -38,10 +38,21 @@ Shopalytics is a complete, production-ready, full-stack multi-tenant Shopify dat
 
 The application is architected as a decoupled monorepo with a separate frontend and backend, which is a standard for modern, scalable web applications.
 
-1. **Frontend (Next.js):** A server-side Railwayed application that handles all user-facing interactions, including the secure login and the interactive dashboard.
+![Shopalytics System Architecture](architecture.png)
+
+**Architecture Components:**
+
+1. **Frontend (Next.js):** A server-side rendered application that handles all user-facing interactions, including the secure login and the interactive dashboard.
 2. **Backend (Node.js/Express):** A RESTful API that manages all business logic, including the Shopify OAuth flow, user authentication, webhook validation, and secure database operations.
 3. **Database (PostgreSQL):** A cloud-hosted PostgreSQL database that stores all application data, with a schema designed for multi-tenancy.
 4. **Shopify:** Acts as the external data source, communicating with the backend via the Admin API for bulk syncing and Webhooks for real-time events.
+
+**Data Flow:**
+- Users interact with the Next.js frontend for authentication, store connection, and analytics viewing
+- Frontend communicates with Node.js/Express backend via RESTful APIs
+- Backend handles JWT authentication, multi-tenant logic, and data orchestration
+- PostgreSQL database stores all application data with proper tenant isolation
+- Shopify integration provides OAuth, Admin API access, and real-time webhooks
 
 ---
 
