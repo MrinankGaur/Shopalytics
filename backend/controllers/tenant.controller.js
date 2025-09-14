@@ -67,6 +67,7 @@ const syncTenantData = async (req, res) => {
         await shopifyService.syncProducts(tenant.id, tenant.storeUrl, tenant.accessToken);
         await shopifyService.syncCustomers(tenant.id, tenant.storeUrl, tenant.accessToken);
         await shopifyService.syncOrders(tenant.id, tenant.storeUrl, tenant.accessToken);
+        await shopifyService.syncCheckouts(tenant.id, tenant.storeUrl, tenant.accessToken);
 
         res.status(200).json({ message: 'Sync completed successfully.' });
     } catch (error) {

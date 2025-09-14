@@ -146,7 +146,7 @@ const handleShopifyWebhook = async (req, res) => {
        * -------------------------
        */
       case "checkouts/create":
-      case "checkouts/update": {
+      case "checkouts/update":
         const checkout = body;
 
         await prisma.checkout.upsert({
@@ -178,7 +178,6 @@ const handleShopifyWebhook = async (req, res) => {
           },
         });
         break;
-      }
 
       /**
        * -------------------------
