@@ -74,61 +74,49 @@ This project was built with the following key assumptions to handle real-world c
 The application is architected as a decoupled monorepo with a separate frontend and backend, following modern microservices principles for scalability and maintainability.
 
 ```mermaid
-flowchart LR
-    U[User/Merchant]
-
-    subgraph FE [Frontend (Vercel)]
-        FE_App[Next.js App<br/>React Dashboard<br/>Authentication Pages]
+flowchart TB
+    User["👤 User/Merchant"]
+    
+    subgraph "Frontend (Vercel)"
+        NextJS["📱 Next.js App<br/>React Dashboard<br/>Authentication Pages"]
     end
-
-    subgraph BE [Backend (Railway)]
-        BE_API[Node.js/Express API<br/>JWT Authentication<br/>Multi-tenant Logic]
+    
+    subgraph "Backend (Railway)" 
+        API["⚙️ Node.js/Express API<br/>JWT Authentication<br/>Multi-tenant Logic"]
     end
-
-    subgraph DB [(PostgreSQL Database)]
-        DB_Schema[Users | Tenants |<br/>Products | Orders | Customers]
-    end
-
-    subgraph SH [Shopify Platform]
-        SH_API[Admin API<br/>OAuth 2.0 | Webhooks]
-    end
-
-    %% User interactions
-    U -- Login/Register --> FE_App
-    U -- View Analytics --> FE_App
-    U -- Connect Store / Sync Button --> FE_App
-
-    %% Authentication
-    FE_App -- Credentials --> BE_API
-    BE_API -- httpOnly Cookie --> U
-    FE_App -- Authenticated Request --> BE_API
-    BE_API -- Dashboard Data --> FE_App
-
-    %% Installation / Onboarding
-    FE_App -- OAuth Request --> BE_API
-    BE_API -- Authorization Flow --> SH_API
-    SH_API -- Access Token & Scopes --> BE_API
-    BE_API -- Save Store Config --> DB
-    BE_API -- Register Webhooks --> SH_API
-
-    %% Sync
-    FE_App -- Sync Request --> BE_API
-    BE_API -- Fetch Store Data --> SH_API
-    SH_API -- Products/Customers/Orders --> BE_API
-    BE_API -- Bulk Update --> DB
-    BE_API -- Store Metrics --> DB
-
-    %% Webhooks
-    SH_API -- New Orders/Checkouts<br/>Webhook Events --> BE_API
-    BE_API -- Update Data --> DB
-
-    %% Data queries
-    BE_API -- Query Tenant Data --> DB
-    BE_API -- Validate & Store --> DB
-
-    %% Back to UI
-    DB -- Aggregations --> BE_API
-    BE_API -- Dashboard Data --> FE_App
+    
+    Database[("🗄️ PostgreSQL Database<br/>Users | Tenants<br/>Products | Orders | Customers")]
+    
+    Shopify["🛍️ Shopify Platform<br/>Admin API<br/>OAuth 2.0 | Webhooks"]
+    
+    %% Authentication Flow
+    User -->|"Login/Register"| NextJS
+    NextJS -->|"Credentials"| API
+    API <-->|"Validate & Store"| Database
+    API -->|"httpOnly Cookie"| User
+    
+    %% Dashboard Flow
+    User -->|"View Analytics"| NextJS
+    NextJS -->|"Authenticated Request"| API
+    API -->|"Query Tenant Data"| Database
+    Database -->|"Store Metrics"| API
+    API -->|"Dashboard Data"| NextJS
+    
+    %% Shopify Integration
+    User -->|"Connect Store"| NextJS
+    NextJS -->|"OAuth Request"| API
+    API <-->|"Authorization Flow"| Shopify
+    API -->|"Save Store Config"| Database
+    
+    %% Real-time Updates
+    Shopify -.->|"New Orders/Checkouts<br/>Webhook Events"| API
+    API -->|"Update Data"| Database
+    
+    %% Manual Sync
+    User -->|"Sync Button"| NextJS
+    NextJS -->|"Sync Request"| API
+    API -->|"Fetch Store Data"| Shopify
+    API -->|"Bulk Update"| Database
 ```
 
 ### **Architecture Components**
