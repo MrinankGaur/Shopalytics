@@ -5,7 +5,7 @@
 A comprehensive multi-tenant Shopify data ingestion and insights platform that demonstrates enterprise-level architecture for onboarding multiple Shopify stores, syncing their core business data, and visualizing key performance indicators in a secure, professional web application.
 
 **Project Status:** ✅ **COMPLETED** - Production Ready  
-**Last Updated:** January 2025  
+**Last Updated:** January 2025
 **Deployed:** [Live Demo](https://shopalytics.vercel.app) | [Backend API](https://shopalytics-backend.railway.app)
 
 ---
@@ -73,7 +73,7 @@ This project was built with the following key assumptions to handle real-world c
 
 The application is architected as a decoupled monorepo with a separate frontend and backend, following modern microservices principles for scalability and maintainability.
 
-![Shopalytics System Architecture](architecture.png)
+ ![Shopalytics System Architecture](architecture.png)
 
 ### **Architecture Components**
 
@@ -103,23 +103,75 @@ The application is architected as a decoupled monorepo with a separate frontend 
 ### **Data Flow Architecture**
 
 ```mermaid
-graph TB
-    A[User Browser] --> B[Next.js Frontend]
-    B --> C[Express.js Backend]
-    C --> D[PostgreSQL Database]
-    C --> E[Shopify Admin API]
-    E --> F[Shopify Webhooks]
-    F --> C
+flowchart TD
+    %% User Layer
+    U1[👤 Store Owner] --> U2[🌐 Web Browser]
+    U3[📱 Mobile User] --> U2
     
-    subgraph "Authentication Flow"
-        G[User Login] --> H[JWT Token]
-        H --> I[Protected Routes]
-    end
+    %% Frontend Layer
+    U2 --> F1[⚡ Next.js Frontend]
+    F1 --> F2[🔐 Auth Components]
+    F1 --> F3[📊 Dashboard Components]
+    F1 --> F4[⚙️ Settings Components]
     
-    subgraph "Multi-Tenant Data"
-        J[Tenant A Data] --> K[Isolated Storage]
-        L[Tenant B Data] --> K
-    end
+    %% API Gateway Layer
+    F2 --> A1[🔑 /api/auth/*]
+    F3 --> A2[📈 /api/tenants/*]
+    F4 --> A3[🛍️ /api/shopify/*]
+    
+    %% Backend Services
+    A1 --> B1[🔒 Auth Controller]
+    A2 --> B2[🏪 Tenant Controller]
+    A3 --> B3[🛒 Shopify Controller]
+    
+    %% Business Logic Layer
+    B1 --> L1[👤 User Service]
+    B2 --> L2[📊 Analytics Service]
+    B3 --> L3[🔄 Sync Service]
+    
+    %% Data Access Layer
+    L1 --> D1[🗄️ Prisma ORM]
+    L2 --> D1
+    L3 --> D1
+    
+    %% Database Layer
+    D1 --> DB1[(🐘 PostgreSQL)]
+    DB1 --> DB2[👥 Users Table]
+    DB1 --> DB3[🏪 Tenants Table]
+    DB1 --> DB4[📦 Products Table]
+    DB1 --> DB5[🛒 Orders Table]
+    DB1 --> DB6[👤 Customers Table]
+    
+    %% External Integrations
+    B3 --> E1[🛍️ Shopify Admin API]
+    E1 --> E2[📊 Products Data]
+    E1 --> E3[👥 Customers Data]
+    E1 --> E4[🛒 Orders Data]
+    
+    %% Webhook Processing
+    E5[🔔 Shopify Webhooks] --> W1[📨 Webhook Controller]
+    W1 --> W2[✅ Validation Service]
+    W2 --> W3[🔄 Data Sync Service]
+    W3 --> D1
+    
+    %% Real-time Updates
+    W3 --> RT1[⚡ Real-time Sync]
+    RT1 --> F3
+    
+    %% Styling
+    classDef userLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef frontendLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef apiLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef backendLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef dataLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef externalLayer fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    
+    class U1,U2,U3 userLayer
+    class F1,F2,F3,F4 frontendLayer
+    class A1,A2,A3 apiLayer
+    class B1,B2,B3,L1,L2,L3 backendLayer
+    class D1,DB1,DB2,DB3,DB4,DB5,DB6 dataLayer
+    class E1,E2,E3,E4,E5,W1,W2,W3,RT1 externalLayer
 ```
 
 ### **Key Architectural Decisions**
