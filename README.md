@@ -103,75 +103,57 @@ The application is architected as a decoupled monorepo with a separate frontend 
 ### **Data Flow Architecture**
 
 ```mermaid
-flowchart TD
-    %% User Layer
-    U1[👤 Store Owner] --> U2[🌐 Web Browser]
-    U3[📱 Mobile User] --> U2
-    
-    %% Frontend Layer
-    U2 --> F1[⚡ Next.js Frontend]
-    F1 --> F2[🔐 Auth Components]
-    F1 --> F3[📊 Dashboard Components]
-    F1 --> F4[⚙️ Settings Components]
-    
-    %% API Gateway Layer
-    F2 --> A1[🔑 /api/auth/*]
-    F3 --> A2[📈 /api/tenants/*]
-    F4 --> A3[🛍️ /api/shopify/*]
-    
-    %% Backend Services
-    A1 --> B1[🔒 Auth Controller]
-    A2 --> B2[🏪 Tenant Controller]
-    A3 --> B3[🛒 Shopify Controller]
-    
-    %% Business Logic Layer
-    B1 --> L1[👤 User Service]
-    B2 --> L2[📊 Analytics Service]
-    B3 --> L3[🔄 Sync Service]
-    
-    %% Data Access Layer
-    L1 --> D1[🗄️ Prisma ORM]
-    L2 --> D1
-    L3 --> D1
-    
-    %% Database Layer
-    D1 --> DB1[(🐘 PostgreSQL)]
-    DB1 --> DB2[👥 Users Table]
-    DB1 --> DB3[🏪 Tenants Table]
-    DB1 --> DB4[📦 Products Table]
-    DB1 --> DB5[🛒 Orders Table]
-    DB1 --> DB6[👤 Customers Table]
-    
-    %% External Integrations
-    B3 --> E1[🛍️ Shopify Admin API]
-    E1 --> E2[📊 Products Data]
-    E1 --> E3[👥 Customers Data]
-    E1 --> E4[🛒 Orders Data]
-    
-    %% Webhook Processing
-    E5[🔔 Shopify Webhooks] --> W1[📨 Webhook Controller]
-    W1 --> W2[✅ Validation Service]
-    W2 --> W3[🔄 Data Sync Service]
-    W3 --> D1
-    
-    %% Real-time Updates
-    W3 --> RT1[⚡ Real-time Sync]
-    RT1 --> F3
-    
-    %% Styling
-    classDef userLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef frontendLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef apiLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef backendLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef dataLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-    classDef externalLayer fill:#f1f8e9,stroke:#33691e,stroke-width:2px
-    
-    class U1,U2,U3 userLayer
-    class F1,F2,F3,F4 frontendLayer
-    class A1,A2,A3 apiLayer
-    class B1,B2,B3,L1,L2,L3 backendLayer
-    class D1,DB1,DB2,DB3,DB4,DB5,DB6 dataLayer
-    class E1,E2,E3,E4,E5,W1,W2,W3,RT1 externalLayer
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant F as Frontend (Next.js)
+    participant B as Backend (Express)
+    participant S as Shopify
+
+    %% 1. Click "Add Store"
+    U->>F: 1) Click "Add Store"
+    Note right of F: Opens connect store modal
+
+    %% 2. Enter store URL
+    U->>F: 2) Enter store URL
+    F-->>U: Validate URL & enable Install
+
+    %% 3. Open install URL
+    U->>F: 3) Open install URL
+
+    %% 4. GET /api/shopify/install
+    F->>B: 4) GET /api/shopify/install?shop={store}
+    B-->>F: 302 Redirect URL (Shopify OAuth)
+
+    %% 5. Redirect to Shopify OAuth
+    F->>S: 5) Redirect to Shopify OAuth (scopes, state)
+
+    %% 6. User grants permissions
+    U->>S: 6) Approve app permissions
+
+    %% 7. OAuth callback with code
+    S->>B: 7) Callback /api/shopify/callback?code=...&state=...
+    B-->>S: Validate HMAC & state
+
+    %% 8. Exchange code for access token
+    B->>S: 8) POST /oauth/access_token (code)
+    S-->>B: Access token
+
+    %% 9. Create tenant & register webhooks
+    B->>B: 9) Create/Update Tenant (storeUrl, token)
+    B->>S: Register webhooks (orders/create, checkouts/create)
+    S-->>B: Webhook confirmations
+
+    %% 10. Redirect to success page
+    B-->>F: 10) 302 Redirect to /dashboard?install=success
+    F-->>U: Show success page
+
+    %% 11. Show success & close window
+    U-->>F: 11) Close popup / proceed to dashboard
+
+    rect rgba(240,240,240,0.3)
+        Note over B,S: Real-time updates via webhooks after install
+    end
 ```
 
 ### **Key Architectural Decisions**
