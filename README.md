@@ -108,52 +108,68 @@ sequenceDiagram
     participant U as User
     participant F as Frontend (Next.js)
     participant B as Backend (Express)
+    participant DB as PostgreSQL
     participant S as Shopify
 
-    %% 1. Click "Add Store"
+    %% ========== Installation / Onboarding ==========
     U->>F: 1) Click "Add Store"
-    Note right of F: Opens connect store modal
-
-    %% 2. Enter store URL
     U->>F: 2) Enter store URL
     F-->>U: Validate URL & enable Install
-
-    %% 3. Open install URL
     U->>F: 3) Open install URL
-
-    %% 4. GET /api/shopify/install
     F->>B: 4) GET /api/shopify/install?shop={store}
     B-->>F: 302 Redirect URL (Shopify OAuth)
-
-    %% 5. Redirect to Shopify OAuth
     F->>S: 5) Redirect to Shopify OAuth (scopes, state)
-
-    %% 6. User grants permissions
     U->>S: 6) Approve app permissions
-
-    %% 7. OAuth callback with code
-    S->>B: 7) Callback /api/shopify/callback?code=...&state=...
+    S->>B: 7) GET /api/shopify/callback?code=...&state=...
     B-->>S: Validate HMAC & state
-
-    %% 8. Exchange code for access token
     B->>S: 8) POST /oauth/access_token (code)
     S-->>B: Access token
-
-    %% 9. Create tenant & register webhooks
-    B->>B: 9) Create/Update Tenant (storeUrl, token)
+    B->>DB: 9) Upsert Tenant (storeUrl, accessToken)
     B->>S: Register webhooks (orders/create, checkouts/create)
     S-->>B: Webhook confirmations
-
-    %% 10. Redirect to success page
     B-->>F: 10) 302 Redirect to /dashboard?install=success
     F-->>U: Show success page
 
-    %% 11. Show success & close window
-    U-->>F: 11) Close popup / proceed to dashboard
+    %% ========== Authentication ==========
+    U->>F: Login form submit (email, password)
+    F->>B: POST /api/auth/login
+    B->>DB: Fetch user by email
+    DB-->>B: User + password hash
+    B-->>F: Set httpOnly session cookie (JWT)
+    F-->>U: Redirect to dashboard
 
-    rect rgba(240,240,240,0.3)
-        Note over B,S: Real-time updates via webhooks after install
+    %% ========== Full Data Sync (Manual or Post-Install) ==========
+    U->>F: Click "Sync Now"
+    F->>B: POST /api/tenants/:tenantId/sync
+    par Customers
+        B->>S: GET /admin/api/customers.json?page_info=...
+        S-->>B: Customers page
+        B->>DB: Upsert customers (tenantId)
+    and Products
+        B->>S: GET /admin/api/products.json?page_info=...
+        S-->>B: Products page
+        B->>DB: Upsert products (tenantId)
+    and Orders
+        B->>S: GET /admin/api/orders.json?status=any&page_info=...
+        S-->>B: Orders + line items page
+        B->>DB: Upsert orders & line items (tenantId)
     end
+    B-->>F: Sync status { success, counts }
+    F-->>U: Show "Sync complete"
+
+    %% ========== Webhook Processing (Real-time) ==========
+    S->>B: POST /api/webhooks/orders/create
+    B->>DB: Upsert order + line items (tenantId)
+    S->>B: POST /api/webhooks/checkouts/create
+    B->>DB: Upsert checkout (tenantId)
+
+    %% ========== Metrics/Data Fetch for Dashboard ==========
+    U->>F: Open dashboard with date filters
+    F->>B: GET /api/tenants/:tenantId/orders?dateFrom&dateTo
+    B->>DB: Aggregate revenue by day
+    DB-->>B: [{date, revenue}]
+    B-->>F: 200 OK JSON
+    F-->>U: Render charts and KPIs
 ```
 
 ### **Key Architectural Decisions**
