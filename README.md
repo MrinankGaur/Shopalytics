@@ -73,10 +73,6 @@ This project was built with the following key assumptions to handle real-world c
 
 The application is architected as a decoupled monorepo with a separate frontend and backend, following modern microservices principles for scalability and maintainability.
 
- <!-- ![Shopalytics System Architecture](architecture.png)
-
-#### System Architecture (Mermaid) -->
-
 ```mermaid
 flowchart LR
     U[User/Merchant]
