@@ -77,20 +77,20 @@ The application is architected as a decoupled monorepo with a separate frontend 
 flowchart LR
     U[User/Merchant]
 
-    subgraph FE[Frontend (Vercel)]
-        FE_App[Next.js App\nReact Dashboard\nAuthentication Pages]
+    subgraph FE [Frontend (Vercel)]
+        FE_App[Next.js App<br/>React Dashboard<br/>Authentication Pages]
     end
 
-    subgraph BE[Backend (Railway)]
-        BE_API[Node.js/Express API\nJWT Authentication\nMulti-tenant Logic]
+    subgraph BE [Backend (Railway)]
+        BE_API[Node.js/Express API<br/>JWT Authentication<br/>Multi-tenant Logic]
     end
 
-    subgraph DB[(PostgreSQL Database)]
-        DB_Schema[Users | Tenants |\nProducts | Orders | Customers]
+    subgraph DB [(PostgreSQL Database)]
+        DB_Schema[Users | Tenants |<br/>Products | Orders | Customers]
     end
 
-    subgraph SH[Shopify Platform]
-        SH_API[Admin API\nOAuth 2.0 | Webhooks]
+    subgraph SH [Shopify Platform]
+        SH_API[Admin API<br/>OAuth 2.0 | Webhooks]
     end
 
     %% User interactions
@@ -119,7 +119,7 @@ flowchart LR
     BE_API -- Store Metrics --> DB
 
     %% Webhooks
-    SH_API -- New Orders/Checkouts\nWebhook Events --> BE_API
+    SH_API -- New Orders/Checkouts<br/>Webhook Events --> BE_API
     BE_API -- Update Data --> DB
 
     %% Data queries
