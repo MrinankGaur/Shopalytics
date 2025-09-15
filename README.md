@@ -73,7 +73,67 @@ This project was built with the following key assumptions to handle real-world c
 
 The application is architected as a decoupled monorepo with a separate frontend and backend, following modern microservices principles for scalability and maintainability.
 
- ![Shopalytics System Architecture](architecture.png)
+ <!-- ![Shopalytics System Architecture](architecture.png)
+
+#### System Architecture (Mermaid) -->
+
+```mermaid
+flowchart LR
+    U[User/Merchant]
+
+    subgraph FE[Frontend (Vercel)]
+        FE_App[Next.js App\nReact Dashboard\nAuthentication Pages]
+    end
+
+    subgraph BE[Backend (Railway)]
+        BE_API[Node.js/Express API\nJWT Authentication\nMulti-tenant Logic]
+    end
+
+    subgraph DB[(PostgreSQL Database)]
+        DB_Schema[Users | Tenants |\nProducts | Orders | Customers]
+    end
+
+    subgraph SH[Shopify Platform]
+        SH_API[Admin API\nOAuth 2.0 | Webhooks]
+    end
+
+    %% User interactions
+    U -- Login/Register --> FE_App
+    U -- View Analytics --> FE_App
+    U -- Connect Store / Sync Button --> FE_App
+
+    %% Authentication
+    FE_App -- Credentials --> BE_API
+    BE_API -- httpOnly Cookie --> U
+    FE_App -- Authenticated Request --> BE_API
+    BE_API -- Dashboard Data --> FE_App
+
+    %% Installation / Onboarding
+    FE_App -- OAuth Request --> BE_API
+    BE_API -- Authorization Flow --> SH_API
+    SH_API -- Access Token & Scopes --> BE_API
+    BE_API -- Save Store Config --> DB
+    BE_API -- Register Webhooks --> SH_API
+
+    %% Sync
+    FE_App -- Sync Request --> BE_API
+    BE_API -- Fetch Store Data --> SH_API
+    SH_API -- Products/Customers/Orders --> BE_API
+    BE_API -- Bulk Update --> DB
+    BE_API -- Store Metrics --> DB
+
+    %% Webhooks
+    SH_API -- New Orders/Checkouts\nWebhook Events --> BE_API
+    BE_API -- Update Data --> DB
+
+    %% Data queries
+    BE_API -- Query Tenant Data --> DB
+    BE_API -- Validate & Store --> DB
+
+    %% Back to UI
+    DB -- Aggregations --> BE_API
+    BE_API -- Dashboard Data --> FE_App
+```
 
 ### **Architecture Components**
 
