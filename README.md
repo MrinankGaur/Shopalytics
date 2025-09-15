@@ -111,35 +111,39 @@ sequenceDiagram
     participant DB as PostgreSQL
     participant S as Shopify
 
-    %% ========== Installation / Onboarding ==========
-    U->>F: 1) Click "Add Store"
-    U->>F: 2) Enter store URL
-    F-->>U: Validate URL & enable Install
-    U->>F: 3) Open install URL
-    F->>B: 4) GET /api/shopify/install?shop={store}
-    B-->>F: 302 Redirect URL (Shopify OAuth)
-    F->>S: 5) Redirect to Shopify OAuth (scopes, state)
-    U->>S: 6) Approve app permissions
-    S->>B: 7) GET /api/shopify/callback?code=...&state=...
-    B-->>S: Validate HMAC & state
-    B->>S: 8) POST /oauth/access_token (code)
-    S-->>B: Access token
-    B->>DB: 9) Upsert Tenant (storeUrl, accessToken)
-    B->>S: Register webhooks (orders/create, checkouts/create)
-    S-->>B: Webhook confirmations
-    B-->>F: 10) 302 Redirect to /dashboard?install=success
-    F-->>U: Show success page
-
-    %% ========== Authentication ==========
-    U->>F: Login form submit (email, password)
+    %% ========== Authentication (Register -> Login) ==========
+    U->>F: 1) Register (email, password)
+    F->>B: POST /api/auth/register
+    B->>DB: Create user
+    B-->>F: 201 Created
+    U->>F: 2) Login (email, password)
     F->>B: POST /api/auth/login
     B->>DB: Fetch user by email
     DB-->>B: User + password hash
     B-->>F: Set httpOnly session cookie (JWT)
     F-->>U: Redirect to dashboard
 
+    %% ========== Installation / Onboarding (Add Store) ==========
+    U->>F: 3) Click "Add Store"
+    U->>F: 4) Enter store URL
+    F-->>U: Validate URL & enable Install
+    U->>F: 5) Open install URL
+    F->>B: 6) GET /api/shopify/install?shop={store}
+    B-->>F: 302 Redirect URL (Shopify OAuth)
+    F->>S: 7) Redirect to Shopify OAuth (scopes, state)
+    U->>S: 8) Approve app permissions
+    S->>B: 9) GET /api/shopify/callback?code=...&state=...
+    B-->>S: Validate HMAC & state
+    B->>S: 10) POST /oauth/access_token (code)
+    S-->>B: Access token
+    B->>DB: 11) Upsert Tenant (storeUrl, accessToken)
+    B->>S: Register webhooks (orders/create, checkouts/create)
+    S-->>B: Webhook confirmations
+    B-->>F: 12) 302 Redirect to /dashboard?install=success
+    F-->>U: Show success page
+
     %% ========== Full Data Sync (Manual or Post-Install) ==========
-    U->>F: Click "Sync Now"
+    U->>F: 13) Click "Sync Now"
     F->>B: POST /api/tenants/:tenantId/sync
     par Customers
         B->>S: GET /admin/api/customers.json?page_info=...
